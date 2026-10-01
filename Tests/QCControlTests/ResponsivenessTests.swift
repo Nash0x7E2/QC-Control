@@ -1,7 +1,7 @@
 import XCTest
 import Combine
 import BoseProtocol
-@testable import BoseBar
+@testable import QCControl
 
 @MainActor final class SlowTransport: HeadphoneTransport {
  var onClose: (() -> Void)?

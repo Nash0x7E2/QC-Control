@@ -23,7 +23,7 @@ import BoseProtocol
  @Published var showBattery = UserDefaults.standard.bool(forKey: "showBattery") {
   didSet { UserDefaults.standard.set(showBattery, forKey: "showBattery") }
  }
- @Published var batteryStyle = BatteryStyle(rawValue: UserDefaults.standard.string(forKey: "batteryStyle") ?? "") ?? .percentage {
+ @Published var batteryStyle = BatteryStyle(rawValue: UserDefaults.standard.string(forKey: "batteryStyle") ?? "") ?? .spitz {
   didSet { UserDefaults.standard.set(batteryStyle.rawValue, forKey: "batteryStyle") }
  }
  @Published var animateBattery = UserDefaults.standard.bool(forKey: "animateBattery") {
@@ -77,7 +77,7 @@ import BoseProtocol
   if CommandLine.arguments.contains("--diagnose") {
    Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
     Task { @MainActor in
-     try? self?.diagnosticText.write(toFile: "/tmp/bosebar-diagnostics.txt", atomically: true, encoding: .utf8)
+     try? self?.diagnosticText.write(toFile: "/tmp/qc-control-diagnostics.txt", atomically: true, encoding: .utf8)
     }
    }
   }
@@ -151,7 +151,7 @@ import BoseProtocol
   }
   await perform(background: true) {
    if requiresBluetoothAuthorization && (CBCentralManager.authorization == .denied || CBCentralManager.authorization == .restricted) {
-    throw BluetoothFailure.message("Allow BoseBar in System Settings → Privacy & Security → Bluetooth, then reopen the app.")
+    throw BluetoothFailure.message("Allow QC Control in System Settings → Privacy & Security → Bluetooth, then reopen the app.")
    }
    if requiresBluetoothAuthorization && CBCentralManager.authorization == .notDetermined { status = "Waiting for Bluetooth permission…"; return }
    let generation = session
@@ -198,7 +198,7 @@ import BoseProtocol
      try? await refresh()
      hardwareTestResult = (hardwareTestResult ?? "") + (currentMode == originalMode ? " Original mode restored." : " Could not verify original mode restoration.")
     }
-    try? diagnosticText.write(toFile: "/tmp/bosebar-hardware-test.txt", atomically: true, encoding: .utf8)
+    try? diagnosticText.write(toFile: "/tmp/qc-control-hardware-test.txt", atomically: true, encoding: .utf8)
    }
   }
  }
@@ -249,15 +249,15 @@ import BoseProtocol
   } else {
    guard let level else { throw BluetoothFailure.message("This model does not expose ANC on/off. Use Quiet or Aware.") }
    // Use our own profile, never overwrite a user's existing custom modes.
-   guard let candidate = allModes.first(where: { $0.editable && $0.name == "BoseBar" }) ?? allModes.first(where: { $0.allowsLevel && !$0.configured }) else {
+   guard let candidate = allModes.first(where: { $0.editable && ($0.name == "QC Control" || $0.name == "BoseBar") }) ?? allModes.first(where: { $0.allowsLevel && !$0.configured }) else {
     throw BluetoothFailure.message("No free custom-mode slot. Remove an unused mode in the Bose app, then reconnect.")
    }
    let latest = try await request(Packet(31, 6, 1, [candidate.id]))
    guard let original = ListeningMode(latest.payload), original.allowsLevel,
-         !original.configured || original.name == "BoseBar" else {
+         !original.configured || original.name == "QC Control" || original.name == "BoseBar" else {
     throw BluetoothFailure.message("The custom mode changed. Reconnect to refresh available slots.")
    }
-   _ = try await request(Packet(31, 6, 2, original.writePayload(level: level, newName: "BoseBar")))
+   _ = try await request(Packet(31, 6, 2, original.writePayload(level: level, newName: "QC Control")))
    let readback = try await request(Packet(31, 6, 1, [candidate.id]))
    guard let updated = ListeningMode(readback.payload), updated.audioSettings?.cancellation == level else {
     throw BluetoothFailure.message("The headphones did not retain the custom noise level.")
@@ -272,7 +272,7 @@ import BoseProtocol
   do {
    if enabled { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
    loginEnabled = SMAppService.mainApp.status == .enabled
-   if enabled && !loginEnabled { error = "Approve BoseBar in System Settings → General → Login Items." }
+   if enabled && !loginEnabled { error = "Approve QC Control in System Settings → General → Login Items." }
   } catch { self.error = error.localizedDescription }
  }
  func settings() { NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.BluetoothSettings")!) }
@@ -281,6 +281,6 @@ import BoseProtocol
   NSPasteboard.general.setString(diagnosticText, forType: .string)
  }
  var diagnosticText: String {
-  "BoseBar\nHardware test: \(hardwareTestResult ?? "not requested")\nDevice: \(name)\nStatus: \(status)\nBattery: \(battery.map(String.init) ?? "unknown")\nMode: \(currentMode.map(String.init) ?? "unknown")\nModes: \(modes.map(\.name).joined(separator: ", "))\nAudio: \(audio?.raw.description ?? "unavailable")\nANC off supported: \(supportsANCOff)\nError: \(error ?? "none")\n" + diagnostics.joined(separator: "\n")
+  "QC Control\nHardware test: \(hardwareTestResult ?? "not requested")\nDevice: \(name)\nStatus: \(status)\nBattery: \(battery.map(String.init) ?? "unknown")\nMode: \(currentMode.map(String.init) ?? "unknown")\nModes: \(modes.map(\.name).joined(separator: ", "))\nAudio: \(audio?.raw.description ?? "unavailable")\nANC off supported: \(supportsANCOff)\nError: \(error ?? "none")\n" + diagnostics.joined(separator: "\n")
  }
 }

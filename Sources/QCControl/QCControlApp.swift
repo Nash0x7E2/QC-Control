@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 
-@main enum BoseBarApp {
+@main enum QCControlApp {
  @MainActor static func main() {
   let app = NSApplication.shared
   app.setActivationPolicy(.accessory)
@@ -26,7 +26,7 @@ import AppKit
     try? await Task.sleep(nanoseconds: 1_000_000_000)
     let unexpectedWindows = NSApp.windows.filter { $0.isVisible && $0 !== NSApp.mainWindow?.sheetParent && $0.styleMask.contains(.titled) }
     let report = "\(unexpectedWindows.isEmpty ? "PASS" : "FAIL"): visible titled windows=\(unexpectedWindows.count).\n"
-    try? report.write(toFile: "/tmp/bosebar-window-test.txt", atomically: true, encoding: .utf8)
+    try? report.write(toFile: "/tmp/qc-control-window-test.txt", atomically: true, encoding: .utf8)
    }
   }
  }
@@ -42,8 +42,8 @@ struct ControlPanel: View {
  var body: some View {
   VStack(alignment: .leading, spacing: 18) {
    HStack(spacing: 12) {
-    Image(systemName: "headphones").font(.system(size: 27, weight: .light))
-     .frame(width: 48, height: 48).background(.quaternary, in: RoundedRectangle(cornerRadius: 14))
+    Image(nsImage: BatteryArtwork.mascot).resizable().interpolation(.high)
+     .frame(width: 48, height: 48).accessibilityLabel("QC Control Spitz mascot")
     VStack(alignment: .leading, spacing: 4) {
      Text(headphones.name).font(.system(size: 14, weight: .semibold))
      HStack(spacing: 5) {
@@ -88,7 +88,7 @@ struct ControlPanel: View {
       if headphones.supportsANCOff {
        Toggle("Enable noise cancellation", isOn: Binding(get: { audio.enabled }, set: { headphones.changeAudio(enabled: $0) })).disabled(headphones.busy)
       } else {
-       Text("Adjusting the slider uses a BoseBar custom mode. Aware lets outside sound in; this model has no separate ANC-off control.").font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+       Text("Adjusting the slider uses a QC Control custom mode. Aware lets outside sound in; this model has no separate ANC-off control.").font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
       }
      }
     } else {
@@ -110,22 +110,22 @@ struct ControlPanel: View {
     Spacer()
     Menu {
      Toggle("Show battery in menu bar", isOn: $headphones.showBattery)
-     Menu("Battery style") {
+     Menu("Menu bar style") {
       Picker("Style", selection: $headphones.batteryStyle) {
        ForEach(BatteryStyle.allCases) { style in Text(style.title).tag(style) }
       }
-      Toggle("Animate indicator", isOn: $headphones.animateBattery)
+      Toggle("Animate icon", isOn: $headphones.animateBattery)
        .disabled(headphones.batteryStyle == .percentage)
-     }.disabled(!headphones.showBattery)
+     }
      Toggle("Launch at login", isOn: Binding(get: { headphones.loginEnabled }, set: headphones.setLogin))
      Button("Bluetooth Settings…", action: headphones.settings)
      Button("Copy diagnostics", action: headphones.copyDiagnostics)
      Divider()
-     Button("Quit BoseBar") { headphones.shutdown(); NSApp.terminate(nil) }.keyboardShortcut("q")
+     Button("Quit QC Control") { headphones.shutdown(); NSApp.terminate(nil) }.keyboardShortcut("q")
     } label: {
      Image(systemName: "gearshape").frame(width: 28, height: 28, alignment: .center)
     }.menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
-     .accessibilityLabel("BoseBar settings").help("Settings")
+     .accessibilityLabel("QC Control settings").help("Settings")
    }
   }.padding(20).frame(width: 350)
    .onDisappear { headphones.isEditingLevel = false }

@@ -2,19 +2,26 @@ import AppKit
 import SwiftUI
 
 enum BatteryStyle: String, CaseIterable, Identifiable {
- case percentage, ring, dots
+ case percentage, ring, dots, spitz
  var id: String { rawValue }
  var title: String {
   switch self {
   case .percentage: return "Percentage"
   case .ring: return "Circular ring"
   case .dots: return "Ring of dots"
+  case .spitz: return "Smiling Spitz"
   }
  }
 }
 
 /// A template image keeps every style legible on light and dark menu bars.
 enum BatteryArtwork {
+ static let mascot: NSImage = {
+  let image = Bundle.main.url(forResource: "AppIcon", withExtension: "icns")
+   .flatMap(NSImage.init(contentsOf:)) ?? NSImage(systemSymbolName: "pawprint.fill", accessibilityDescription: "Smiling Spitz")!
+  image.size = NSSize(width: 21, height: 21)
+  return image
+ }()
  static func image(level: Int, style: BatteryStyle, brightness: Double = 1) -> NSImage {
   let fraction = CGFloat(min(100, max(0, level))) / 100
   let image = NSImage(size: NSSize(width: 22, height: 22), flipped: false) { bounds in
@@ -52,4 +59,3 @@ enum BatteryArtwork {
   return image
  }
 }
-

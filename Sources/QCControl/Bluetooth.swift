@@ -78,7 +78,7 @@ final class BluetoothWorker: NSObject, IOBluetoothRFCOMMChannelDelegate {
     RunLoop.current.run(mode: .default, before: .distantFuture)
    }
   }
-  thread.name = "BoseBar Bluetooth"
+  thread.name = "QC Control Bluetooth"
   thread.qualityOfService = .utility
   super.init()
   thread.start()

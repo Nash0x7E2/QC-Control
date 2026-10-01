@@ -1,0 +1,408 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		159862B419EB62EE4AE98B8A /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14A621FF5CFC7B2D5BA42941 /* CoreBluetooth.framework */; };
+		46B15D5FEB2C7F357BE008C2 /* Headphones.swift in Sources */ = {isa = PBXBuildFile; fileRef = 164F283A90A6FBBFF0693108 /* Headphones.swift */; };
+		620F59024FA1791ADEE51FB3 /* Bluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB2E758BBEACD9EA0558B4E /* Bluetooth.swift */; };
+		6691C14073B52705AAFE2AF4 /* QCControlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE942CAA89960176E95E6045 /* QCControlApp.swift */; };
+		794C8DA70462D8D9439B6A0D /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECF9F8EEFA4A4C9BB95CDBBB /* StatusBarController.swift */; };
+		88B11C8070F6C93528249E93 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 743B29E22B420BA67218E87C /* IOBluetooth.framework */; };
+		8AFBDCD735B19C23F12137B1 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1A1336197D444556F5C57D /* ServiceManagement.framework */; };
+		9D1AEF5C9236968D35F71735 /* BoseProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = 690D9ECC9A0C7DC8A111AD3B /* BoseProtocol */; };
+		AF902150157C77482DB3CBE0 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 63CF45F352D53D9E176DED8F /* AppIcon.icns */; };
+		C39C860A53B85792599B5A12 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B57B6F9485ABF0A146D11328 /* Cocoa.framework */; };
+		CF0C6F3EA1991729280B0749 /* BatteryIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887697F0E2935A292CC06BF1 /* BatteryIndicator.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		14A621FF5CFC7B2D5BA42941 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/CoreBluetooth.framework; sourceTree = DEVELOPER_DIR; };
+		164F283A90A6FBBFF0693108 /* Headphones.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Headphones.swift; sourceTree = "<group>"; };
+		2441FDF054714420101A27DA /* Package.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		5DB2E758BBEACD9EA0558B4E /* Bluetooth.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Bluetooth.swift; sourceTree = "<group>"; };
+		63CF45F352D53D9E176DED8F /* AppIcon.icns */ = {isa = PBXFileReference; includeInIndex = 1; path = AppIcon.icns; sourceTree = "<group>"; };
+		743B29E22B420BA67218E87C /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/IOBluetooth.framework; sourceTree = DEVELOPER_DIR; };
+		887697F0E2935A292CC06BF1 /* BatteryIndicator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BatteryIndicator.swift; sourceTree = "<group>"; };
+		A2A8BA118DDE924559190F87 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		AC1A1336197D444556F5C57D /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/ServiceManagement.framework; sourceTree = DEVELOPER_DIR; };
+		B57B6F9485ABF0A146D11328 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		C508B3C1F02C47C2680FEFF4 /* AppIcon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = AppIcon.png; sourceTree = "<group>"; };
+		DE942CAA89960176E95E6045 /* QCControlApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QCControlApp.swift; sourceTree = "<group>"; };
+		EB835FF278172310B28DD7BC /* QC Control.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "QC Control.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC58701F6DC3EE1F1AEF1654 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ECF9F8EEFA4A4C9BB95CDBBB /* StatusBarController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7DB337B42AE59EA61A9A7EF1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C39C860A53B85792599B5A12 /* Cocoa.framework in Frameworks */,
+				9D1AEF5C9236968D35F71735 /* BoseProtocol in Frameworks */,
+				88B11C8070F6C93528249E93 /* IOBluetooth.framework in Frameworks */,
+				159862B419EB62EE4AE98B8A /* CoreBluetooth.framework in Frameworks */,
+				8AFBDCD735B19C23F12137B1 /* ServiceManagement.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0102A4A4BFF00DD7E8AEB296 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				887697F0E2935A292CC06BF1 /* BatteryIndicator.swift */,
+				5DB2E758BBEACD9EA0558B4E /* Bluetooth.swift */,
+				164F283A90A6FBBFF0693108 /* Headphones.swift */,
+				DE942CAA89960176E95E6045 /* QCControlApp.swift */,
+				ECF9F8EEFA4A4C9BB95CDBBB /* StatusBarController.swift */,
+			);
+			name = Application;
+			path = Sources/QCControl;
+			sourceTree = "<group>";
+		};
+		0576D45B8B8A9B5E7C5F9B2A /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				B57B6F9485ABF0A146D11328 /* Cocoa.framework */,
+				743B29E22B420BA67218E87C /* IOBluetooth.framework */,
+				14A621FF5CFC7B2D5BA42941 /* CoreBluetooth.framework */,
+				AC1A1336197D444556F5C57D /* ServiceManagement.framework */,
+			);
+			name = "OS X";
+			sourceTree = "<group>";
+		};
+		093A26ED9753F44098B80F44 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				63CF45F352D53D9E176DED8F /* AppIcon.icns */,
+				C508B3C1F02C47C2680FEFF4 /* AppIcon.png */,
+			);
+			name = Assets;
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		10AC83617C5CE4FCACAA8416 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0576D45B8B8A9B5E7C5F9B2A /* OS X */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		51C8FBD29693C8655114EFC0 = {
+			isa = PBXGroup;
+			children = (
+				C754F0A70050FEBF10A0CFBE /* Products */,
+				10AC83617C5CE4FCACAA8416 /* Frameworks */,
+				0102A4A4BFF00DD7E8AEB296 /* Application */,
+				093A26ED9753F44098B80F44 /* Assets */,
+				EC58701F6DC3EE1F1AEF1654 /* Info.plist */,
+				A2A8BA118DDE924559190F87 /* README.md */,
+				2441FDF054714420101A27DA /* Package.swift */,
+			);
+			sourceTree = "<group>";
+		};
+		C754F0A70050FEBF10A0CFBE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EB835FF278172310B28DD7BC /* QC Control.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		89024AB19C4009A96C6B07E4 /* QC Control */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BAFF88C10F993CC06BA031A0 /* Build configuration list for PBXNativeTarget "QC Control" */;
+			buildPhases = (
+				894D9814929F8CD46D7777CD /* Sources */,
+				7DB337B42AE59EA61A9A7EF1 /* Frameworks */,
+				FB51DFF326A0F5E7FD47F073 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "QC Control";
+			packageProductDependencies = (
+				690D9ECC9A0C7DC8A111AD3B /* BoseProtocol */,
+			);
+			productName = "QC Control";
+			productReference = EB835FF278172310B28DD7BC /* QC Control.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8E91AEA6A4B90C4AA84144ED /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 2700;
+			};
+			buildConfigurationList = 999A34D7CCAC5C843098B9FF /* Build configuration list for PBXProject "QCControl" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 51C8FBD29693C8655114EFC0;
+			minimizedProjectReferenceProxies = 0;
+			packageReferences = (
+				0DB018F594ABDEDE23ACC0CD /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C754F0A70050FEBF10A0CFBE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				89024AB19C4009A96C6B07E4 /* QC Control */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FB51DFF326A0F5E7FD47F073 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF902150157C77482DB3CBE0 /* AppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		894D9814929F8CD46D7777CD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF0C6F3EA1991729280B0749 /* BatteryIndicator.swift in Sources */,
+				620F59024FA1791ADEE51FB3 /* Bluetooth.swift in Sources */,
+				46B15D5FEB2C7F357BE008C2 /* Headphones.swift in Sources */,
+				6691C14073B52705AAFE2AF4 /* QCControlApp.swift in Sources */,
+				794C8DA70462D8D9439B6A0D /* StatusBarController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		50CCAB9E209E17BD35500645 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				EXECUTABLE_NAME = QCControl;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.neevash.qccontrol;
+				PRODUCT_NAME = "QC Control";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		78CBE3F6D2CAB1B42FFFED3F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		99F131CCB967E7B436DE0E64 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		D5C9E1AC5F799D225FCF8AB8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				EXECUTABLE_NAME = QCControl;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.neevash.qccontrol;
+				PRODUCT_NAME = "QC Control";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		999A34D7CCAC5C843098B9FF /* Build configuration list for PBXProject "QCControl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				78CBE3F6D2CAB1B42FFFED3F /* Debug */,
+				99F131CCB967E7B436DE0E64 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BAFF88C10F993CC06BA031A0 /* Build configuration list for PBXNativeTarget "QC Control" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D5C9E1AC5F799D225FCF8AB8 /* Release */,
+				50CCAB9E209E17BD35500645 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		0DB018F594ABDEDE23ACC0CD /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		690D9ECC9A0C7DC8A111AD3B /* BoseProtocol */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0DB018F594ABDEDE23ACC0CD /* XCLocalSwiftPackageReference "." */;
+			productName = BoseProtocol;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 8E91AEA6A4B90C4AA84144ED /* Project object */;
+}

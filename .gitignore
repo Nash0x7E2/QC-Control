@@ -2,3 +2,10 @@
 dist/
 .DS_Store
 .swiftpm/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.p12
+*.p8
+*.mobileprovision
+*.provisionprofile

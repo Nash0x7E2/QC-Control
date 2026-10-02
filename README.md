@@ -11,10 +11,6 @@
   <a href="https://github.com/Nash0x7E2/QC-Control/releases"><strong>Download for macOS</strong></a>
 </p>
 
-Requires **macOS 13 or later**. Built for Apple silicon and Intel Macs. Tested with **Bose QuietComfort Ultra Headphones (first generation)**; other models are not yet verified.
-
-The first public release is coming soon. Downloads will appear on the releases page above.
-
 ## Get started
 
 1. Download the ZIP from the releases page and unzip it.

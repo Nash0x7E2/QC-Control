@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-# Uses the personal account already configured in Xcode, including cloud signing.
+# Uses the developer account configured locally in Xcode, including cloud signing.
 # Resume exports an already submitted archive; it never rebuilds or resubmits it.
 resume=false
 if [[ "${1:-}" == --resume && $# == 1 ]]; then
@@ -9,6 +9,15 @@ if [[ "${1:-}" == --resume && $# == 1 ]]; then
 elif [[ $# != 0 ]]; then
   printf 'Usage: %s [--resume]\n' "$0" >&2; exit 1
 fi
+team_id="${QC_CONTROL_TEAM_ID:-}"
+if [[ -z "$team_id" && -f Config/Signing.local.xcconfig ]]; then
+  team_id=$(sed -nE 's/^DEVELOPMENT_TEAM[[:space:]]*=[[:space:]]*([A-Z0-9]{10})[[:space:]]*$/\1/p' Config/Signing.local.xcconfig)
+fi
+[[ "$team_id" =~ ^[A-Z0-9]{10}$ ]] || { printf 'Set QC_CONTROL_TEAM_ID or configure Config/Signing.local.xcconfig.\n' >&2; exit 1; }
+work=$(mktemp -d "${TMPDIR:-/tmp}/qc-control-release.XXXXXX")
+trap 'rm -rf "$work"' EXIT
+cp scripts/ExportOptions.plist "$work/ExportOptions.plist"
+/usr/libexec/PlistBuddy -c "Add :teamID string $team_id" "$work/ExportOptions.plist"
 version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Info.plist)
 release_dir="$PWD/dist/release-${version}"
 archive="$PWD/dist/QC-Control.xcarchive"
@@ -20,9 +29,9 @@ if ! $resume; then
   git rev-parse HEAD > dist/release-commit.txt
   xcodebuild -project QCControl.xcodeproj -scheme 'QC Control' -configuration Release \
     -destination 'generic/platform=macOS' -archivePath "$archive" \
-    -derivedDataPath .build/xcode -allowProvisioningUpdates archive
+    -derivedDataPath .build/xcode -allowProvisioningUpdates DEVELOPMENT_TEAM="$team_id" archive
   # Developer ID + upload submits to Apple's notary service, not the App Store.
-  xcodebuild -exportArchive -archivePath "$archive" -exportOptionsPlist scripts/ExportOptions.plist \
+  xcodebuild -exportArchive -archivePath "$archive" -exportOptionsPlist "$work/ExportOptions.plist" \
     -exportPath dist/notarization-upload -allowProvisioningUpdates
 fi
 if ! xcodebuild -exportNotarizedApp -archivePath "$archive" -exportPath "$export_dir" -allowProvisioningUpdates; then
@@ -31,7 +40,7 @@ if ! xcodebuild -exportNotarizedApp -archivePath "$archive" -exportPath "$export
 fi
 app="$export_dir/QC Control.app"
 signature=$(codesign -dvv "$app" 2>&1)
-[[ "$signature" == *'Authority=Developer ID Application: YOUR NAME (YOUR_TEAM_ID)'* ]] || {
+[[ "$signature" == *'Authority=Developer ID Application: '* && "$signature" == *"TeamIdentifier=$team_id"* ]] || {
   printf 'Unexpected signing identity; refusing to package.\n' >&2; exit 1;
 }
 architectures=$(lipo -archs "$app/Contents/MacOS/QCControl")
@@ -41,8 +50,6 @@ architectures=$(lipo -archs "$app/Contents/MacOS/QCControl")
 xcrun stapler validate "$app"
 codesign --verify --strict --verbose=2 "$app"
 spctl --assess --type execute --verbose=2 "$app"
-work=$(mktemp -d "${TMPDIR:-/tmp}/qc-control-release.XXXXXX")
-trap 'rm -rf "$work"' EXIT
 zip="QC-Control-${version}-universal.zip"
 ditto -c -k --sequesterRsrc --keepParent "$app" "$work/$zip"
 mkdir "$work/verify"

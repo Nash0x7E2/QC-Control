@@ -1,0 +1,3 @@
+// Choose a team in the ignored local override, or pass DEVELOPMENT_TEAM to xcodebuild.
+DEVELOPMENT_TEAM =
+#include? "Signing.local.xcconfig"

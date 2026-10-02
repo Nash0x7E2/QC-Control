@@ -9,3 +9,25 @@ xcuserdata/
 *.p8
 *.mobileprovision
 *.provisionprofile
+
+# Local signing, secrets, and private development material
+.env
+.env.*
+*.local.xcconfig
+*.local.env
+*.key
+*.pem
+*.pfx
+*.cer
+*.der
+*.keychain*
+*.xcarchive/
+*.dSYM/
+*.log
+*.bundle
+.private/
+.codex/
+.agents/
+AGENTS.md
+docs/*prompt*
+docs/RELEASE_VALIDATION.md

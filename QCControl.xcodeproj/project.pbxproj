@@ -26,6 +26,7 @@
 		14A621FF5CFC7B2D5BA42941 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		164F283A90A6FBBFF0693108 /* Headphones.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Headphones.swift; sourceTree = "<group>"; };
 		2441FDF054714420101A27DA /* Package.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		2DC4D7E46CF0F314CC36DDBC /* Signing.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 		321A20FD3230869423F6BBC8 /* Onboarding.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
 		5DB2E758BBEACD9EA0558B4E /* Bluetooth.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Bluetooth.swift; sourceTree = "<group>"; };
 		63CF45F352D53D9E176DED8F /* AppIcon.icns */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
@@ -101,6 +102,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		3D3AC35CBEC63A14267D653B /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				2DC4D7E46CF0F314CC36DDBC /* Signing.xcconfig */,
+			);
+			name = Config;
+			path = Config;
+			sourceTree = "<group>";
+		};
 		51C8FBD29693C8655114EFC0 = {
 			isa = PBXGroup;
 			children = (
@@ -111,6 +121,7 @@
 				EC58701F6DC3EE1F1AEF1654 /* Info.plist */,
 				A2A8BA118DDE924559190F87 /* README.md */,
 				2441FDF054714420101A27DA /* Package.swift */,
+				3D3AC35CBEC63A14267D653B /* Config */,
 			);
 			sourceTree = "<group>";
 		};
@@ -206,6 +217,7 @@
 /* Begin XCBuildConfiguration section */
 		50CCAB9E209E17BD35500645 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DC4D7E46CF0F314CC36DDBC /* Signing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -213,7 +225,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 6;
-				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				EXECUTABLE_NAME = QCControl;
@@ -351,6 +362,7 @@
 		};
 		D5C9E1AC5F799D225FCF8AB8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DC4D7E46CF0F314CC36DDBC /* Signing.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -359,7 +371,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 6;
-				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				EXECUTABLE_NAME = QCControl;

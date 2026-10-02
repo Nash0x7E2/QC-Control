@@ -14,9 +14,11 @@ import QuartzCore
  private var lastIconKey = ""
  private var animated = false
  private var animationStyle: BatteryStyle?
+ private let onActivate: () -> Bool
 
- init(headphones: Headphones, onShowSetup: @escaping () -> Void = {}) {
+ init(headphones: Headphones, onShowSetup: @escaping () -> Void = {}, onActivate: @escaping () -> Bool = { false }) {
   self.headphones = headphones
+  self.onActivate = onActivate
   super.init()
   popover.behavior = .transient
   popover.contentViewController = NSHostingController(rootView: ControlPanel(headphones: headphones, onShowSetup: { [weak self] in
@@ -43,6 +45,7 @@ import QuartzCore
  }
 
  @objc private func togglePanel() {
+  if onActivate() { popover.performClose(nil); return }
   guard let button = item.button else { return }
   if popover.isShown { popover.performClose(nil) }
   else {

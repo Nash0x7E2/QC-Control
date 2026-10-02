@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import Combine
 
 @MainActor final class OnboardingFlow: ObservableObject {
  enum Stage: Int { case welcome, connect, ready }
@@ -24,11 +25,20 @@ import SwiftUI
  private let window: NSWindow
  private let flow: OnboardingFlow
  private let onFinish: () -> Void
+ private let presentWindow: @MainActor (NSWindow) -> Void
+ private var permissionChanges: AnyCancellable?
+ private var permissionWasPending = false
+ private var restoreTask: Task<Void, Never>?
  private var completing = false
+ private(set) var isOpen = false
  var isVisible: Bool { window.isVisible }
- init(headphones: Headphones, onFinish: @escaping () -> Void) {
-  self.flow = OnboardingFlow()
+ init(headphones: Headphones, defaults: UserDefaults = .standard, presentWindow: @escaping @MainActor (NSWindow) -> Void = {
+  NSApp.activate(ignoringOtherApps: true)
+  $0.makeKeyAndOrderFront(nil)
+ }, onFinish: @escaping () -> Void) {
+  self.flow = OnboardingFlow(defaults: defaults)
   self.onFinish = onFinish
+  self.presentWindow = presentWindow
   window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 500, height: 590),
                     styleMask: [.titled, .closable, .fullSizeContentView], backing: .buffered, defer: false)
   super.init()
@@ -38,6 +48,7 @@ import SwiftUI
   window.isMovableByWindowBackground = true
   window.isReleasedWhenClosed = false
   window.isRestorable = false
+  window.hidesOnDeactivate = false
   window.delegate = self
   window.contentViewController = NSHostingController(rootView: OnboardingView(
    headphones: headphones, flow: flow,
@@ -45,8 +56,23 @@ import SwiftUI
    onLater: { [weak self] in self?.complete(revealControls: false) }
   ))
   window.center()
+  permissionChanges = headphones.$bluetoothPermissionPending.removeDuplicates().sink { [weak self] pending in
+   self?.permissionChanged(pending)
+  }
  }
- func show() { NSApp.activate(ignoringOtherApps: true); window.makeKeyAndOrderFront(nil) }
+ func show() { isOpen = true; presentWindow(window) }
+ private func permissionChanged(_ pending: Bool) {
+  let resolved = permissionWasPending && !pending
+  permissionWasPending = pending
+  guard resolved, isOpen else { return }
+  restoreTask?.cancel()
+  // Let the system permission sheet dismiss before restoring our accessory window.
+  restoreTask = Task { @MainActor [weak self] in
+   do { try await Task.sleep(nanoseconds: 250_000_000) } catch { return }
+   guard let self, self.isOpen else { return }
+   self.show()
+  }
+ }
  private func complete(revealControls: Bool) {
   guard !completing else { return }
   completing = true
@@ -55,6 +81,8 @@ import SwiftUI
   if revealControls { onFinish() }
  }
  func windowWillClose(_ notification: Notification) {
+  isOpen = false
+  restoreTask?.cancel()
   flow.finish() // Closing means “set up later”; it never requests Bluetooth access.
  }
 }

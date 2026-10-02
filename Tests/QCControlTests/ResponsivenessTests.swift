@@ -9,6 +9,7 @@ import BoseProtocol
  var onLog: ((String) -> Void)?
  var count = 0
  var discoveryCount = 0
+ var connectFailures = 0
  var mode: UInt8 = 0
  var generation = 0
  var onModeRead: (() -> Void)?
@@ -17,7 +18,13 @@ import BoseProtocol
   discoveryCount += 1
   return [DeviceChoice(id: UserDefaults.standard.string(forKey: "headphone") ?? "test", name: "Test headphones", connected: true)]
  }
- func connect(_ address: String) async throws { try await Task.sleep(nanoseconds: 300_000_000) }
+ func connect(_ address: String) async throws {
+  try await Task.sleep(nanoseconds: 300_000_000)
+  if connectFailures > 0 {
+   connectFailures -= 1
+   throw BluetoothFailure.message("Connection timed out")
+  }
+ }
  func close() { generation += 1 }
  func request(_ p: Packet) async throws -> Packet {
   let session = generation
@@ -42,6 +49,25 @@ import BoseProtocol
 }
 
 final class ResponsivenessTests: XCTestCase {
+ @MainActor func testRetryClearsPreviousTimeoutWhileConnecting() async throws {
+  let transport = SlowTransport()
+  transport.connectFailures = 1
+  let model = Headphones(transport: transport)
+  defer { model.shutdown() }
+  for _ in 0..<40 {
+   if model.error != nil && !model.connecting { break }
+   try await Task.sleep(nanoseconds: 50_000_000)
+  }
+  XCTAssertNotNil(model.error)
+  model.startConnection()
+  for _ in 0..<20 {
+   if model.connecting { break }
+   try await Task.sleep(nanoseconds: 10_000_000)
+  }
+  XCTAssertTrue(model.connecting)
+  XCTAssertNil(model.error, "A previous attempt's timeout must not accompany the new connection status")
+  try await ready(model)
+ }
  @MainActor private func ready(_ model: Headphones) async throws {
   for _ in 0..<100 {
    if model.connected && !model.connecting { return }

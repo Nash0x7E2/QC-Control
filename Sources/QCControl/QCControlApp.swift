@@ -20,7 +20,11 @@ import AppKit
   let firstLaunch = OnboardingFlow()
   let headphones = Headphones(connectAutomatically: !smokeTest && (diagnostic || firstLaunch.shouldAutoConnect))
   self.headphones = headphones
-  let controller = StatusBarController(headphones: headphones, onShowSetup: { [weak self] in self?.showOnboarding() })
+  let controller = StatusBarController(headphones: headphones, onShowSetup: { [weak self] in self?.showOnboarding() }, onActivate: { [weak self] in
+   guard let onboarding = self?.onboarding, onboarding.isOpen else { return false }
+   onboarding.show()
+   return true
+  })
   statusController = controller
   if !diagnostic && (firstLaunch.needsWelcome || CommandLine.arguments.contains("--onboarding")) { showOnboarding() }
   if smokeTest { controller.runAppearanceSmokeTest() }
@@ -35,7 +39,7 @@ import AppKit
   }
  }
  private func showOnboarding() {
-  if let onboarding, onboarding.isVisible { onboarding.show(); return }
+  if let onboarding, onboarding.isOpen { onboarding.show(); return }
   guard let headphones else { return }
   onboarding = OnboardingController(headphones: headphones) { [weak self] in self?.statusController?.showPanel() }
   onboarding?.show()

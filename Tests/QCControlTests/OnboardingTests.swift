@@ -1,7 +1,58 @@
 import XCTest
+import AppKit
 @testable import QCControl
 
 final class OnboardingTests: XCTestCase {
+ @MainActor func testPermissionResponseRestoresHiddenSetupOnlyOnce() async throws {
+  _ = NSApplication.shared
+  let name = "QCControl-Focus-\(UUID())"
+  let defaults = UserDefaults(suiteName: name)!
+  defer { defaults.removePersistentDomain(forName: name) }
+  let model = Headphones(connectAutomatically: false, transport: SlowTransport())
+  defer { model.shutdown() }
+  var presentations = 0
+  var window: NSWindow?
+  let controller = OnboardingController(headphones: model, defaults: defaults, presentWindow: {
+   window = $0
+   $0.orderOut(nil) // Permission prompt obscures setup; visibility must not mean closed.
+   presentations += 1
+  }, onFinish: {})
+  defer { window?.close() }
+  controller.show()
+  XCTAssertTrue(controller.isOpen)
+  XCTAssertFalse(controller.isVisible)
+  model.bluetoothPermissionPending = true
+  model.bluetoothPermissionPending = false
+  try await Task.sleep(nanoseconds: 400_000_000)
+  XCTAssertEqual(presentations, 2)
+  model.bluetoothAvailability = .ready
+  model.bluetoothPermissionPending = false
+  try await Task.sleep(nanoseconds: 400_000_000)
+  XCTAssertEqual(presentations, 2, "Normal Bluetooth updates must not steal focus")
+ }
+ @MainActor func testClosingSetupPreventsPermissionResponseFromReopeningIt() async throws {
+  _ = NSApplication.shared
+  for closeBeforeResponse in [true, false] {
+   let name = "QCControl-Close-\(UUID())"
+   let defaults = UserDefaults(suiteName: name)!
+   defer { defaults.removePersistentDomain(forName: name) }
+   let model = Headphones(connectAutomatically: false, transport: SlowTransport())
+   defer { model.shutdown() }
+   var presentations = 0
+   var window: NSWindow?
+   let controller = OnboardingController(headphones: model, defaults: defaults, presentWindow: {
+    window = $0; presentations += 1
+   }, onFinish: {})
+   controller.show()
+   model.bluetoothPermissionPending = true
+   if closeBeforeResponse { window?.close() }
+   model.bluetoothPermissionPending = false
+   if !closeBeforeResponse { window?.close() }
+   try await Task.sleep(nanoseconds: 400_000_000)
+   XCTAssertFalse(controller.isOpen)
+   XCTAssertEqual(presentations, 1, "Explicitly closed setup must stay closed")
+  }
+ }
  @MainActor func testWelcomeDoesNotRequestBluetoothOrStartDiscovery() async throws {
   let transport = SlowTransport()
   let headphones = Headphones(connectAutomatically: false, transport: transport)

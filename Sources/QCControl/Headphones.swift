@@ -13,6 +13,7 @@ import BoseProtocol
  @Published var busy = false
  @Published var connecting = false
  @Published var bluetoothAvailability: BluetoothAvailability = .idle
+ @Published var bluetoothPermissionPending = false
  var isEditingLevel = false
  @Published var battery: Int?
  @Published var modes: [ListeningMode] = []
@@ -92,10 +93,13 @@ import BoseProtocol
   status = "Looking for headphones…"
   if requiresBluetoothAuthorization {
    UserDefaults.standard.set(true, forKey: OnboardingFlow.startedKey)
+   bluetoothPermissionPending = CBCentralManager.authorization == .notDetermined
    bluetoothAvailability = .waitingForPermission
    permissionManager = BluetoothAccess { [weak self] availability in
     guard let self else { return }
     if self.bluetoothAvailability != availability { self.bluetoothAvailability = availability }
+    let pending = CBCentralManager.authorization == .notDetermined
+    if self.bluetoothPermissionPending != pending { self.bluetoothPermissionPending = pending }
     if availability == .ready { self.nextRetry = .distantPast }
    }
   } else { bluetoothAvailability = .ready }
@@ -159,6 +163,7 @@ import BoseProtocol
  }
  private func connect() async {
   guard !connecting, !paused else { return }
+  if error != nil { error = nil }
   connecting = true
   defer {
    connecting = false

@@ -16,9 +16,10 @@ import AppKit
  private var onboarding: OnboardingController?
  func applicationDidFinishLaunching(_ notification: Notification) {
   let smokeTest = CommandLine.arguments.contains("--appearance-smoke-test")
+  let positioningTest = CommandLine.arguments.contains("--positioning-smoke-test")
   let diagnostic = CommandLine.arguments.contains { $0.hasSuffix("-smoke-test") }
   let firstLaunch = OnboardingFlow()
-  let headphones = Headphones(connectAutomatically: !smokeTest && (diagnostic || firstLaunch.shouldAutoConnect))
+  let headphones = Headphones(connectAutomatically: !smokeTest && !positioningTest && (diagnostic || firstLaunch.shouldAutoConnect))
   self.headphones = headphones
   let controller = StatusBarController(headphones: headphones, onShowSetup: { [weak self] in self?.showOnboarding() }, onActivate: { [weak self] in
    guard let onboarding = self?.onboarding, onboarding.isOpen else { return false }
@@ -28,6 +29,7 @@ import AppKit
   statusController = controller
   if !diagnostic && (firstLaunch.needsWelcome || CommandLine.arguments.contains("--onboarding")) { showOnboarding() }
   if smokeTest { controller.runAppearanceSmokeTest() }
+  if positioningTest { controller.runPositioningSmokeTest() }
   if CommandLine.arguments.contains("--connection-smoke-test") { controller.runConnectionSmokeTest() }
   if CommandLine.arguments.contains("--window-smoke-test") {
    Task { @MainActor in

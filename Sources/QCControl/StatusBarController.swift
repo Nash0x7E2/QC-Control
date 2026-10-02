@@ -2,6 +2,19 @@ import AppKit
 import SwiftUI
 import Combine
 import QuartzCore
+import BoseProtocol
+
+enum PopupPlacement {
+ static func origin(anchor: NSRect, size: NSSize, currentX: CGFloat, visibleFrame: NSRect) -> NSPoint {
+  let margin: CGFloat = 6
+  let top = min(anchor.minY, visibleFrame.maxY) - margin
+  // Preserve AppKit's arrow alignment unless it chose another display.
+  let proposedX = (currentX...currentX + size.width).contains(anchor.midX)
+   ? currentX : anchor.midX - size.width / 2
+  let x = min(max(proposedX, visibleFrame.minX + margin), max(visibleFrame.minX + margin, visibleFrame.maxX - size.width - margin))
+  return NSPoint(x: x, y: top - size.height)
+ }
+}
 
 /// Keep animation out of SwiftUI's menu-label rendering graph. Core Animation
 /// composites the existing icon; it never redraws the image or publishes state.
@@ -15,12 +28,16 @@ import QuartzCore
  private var animated = false
  private var animationStyle: BatteryStyle?
  private let onActivate: () -> Bool
+ private var placementObservers = Set<AnyCancellable>()
+ private var placementScheduled = false
+ private var placementCorrections = 0
 
  init(headphones: Headphones, onShowSetup: @escaping () -> Void = {}, onActivate: @escaping () -> Bool = { false }) {
   self.headphones = headphones
   self.onActivate = onActivate
   super.init()
   popover.behavior = .transient
+  popover.animates = false
   popover.contentViewController = NSHostingController(rootView: ControlPanel(headphones: headphones, onShowSetup: { [weak self] in
    self?.popover.performClose(nil)
    onShowSetup()
@@ -41,22 +58,54 @@ import QuartzCore
    forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification,
    object: nil, queue: .main
   ) { [weak self] _ in Task { @MainActor in self?.refresh() } }
+  let center = NotificationCenter.default
+  center.publisher(for: NSPopover.didShowNotification, object: popover)
+   .merge(with: center.publisher(for: NSApplication.didChangeScreenParametersNotification))
+   .sink { [weak self] _ in self?.schedulePlacement() }.store(in: &placementObservers)
+  center.publisher(for: NSWindow.didResizeNotification)
+   .merge(with: center.publisher(for: NSWindow.didMoveNotification))
+   .receive(on: RunLoop.main)
+   .sink { [weak self] note in
+    guard let self, let window = note.object as? NSWindow,
+          window === self.popover.contentViewController?.view.window || window === self.item.button?.window else { return }
+    self.schedulePlacement()
+   }.store(in: &placementObservers)
   refresh()
  }
 
  @objc private func togglePanel() {
   if onActivate() { popover.performClose(nil); return }
-  guard let button = item.button else { return }
   if popover.isShown { popover.performClose(nil) }
-  else {
-   NSApp.activate(ignoringOtherApps: true)
-   popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-  }
+  else { showPanel() }
  }
  func showPanel() {
   guard !popover.isShown, let button = item.button else { return }
   NSApp.activate(ignoringOtherApps: true)
   popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+  pinPanelBelowMenuBar()
+  schedulePlacement()
+ }
+
+ private func schedulePlacement() {
+  guard popover.isShown, !placementScheduled else { return }
+  placementScheduled = true
+  DispatchQueue.main.async { [weak self] in
+   guard let self else { return }
+   self.placementScheduled = false
+   self.pinPanelBelowMenuBar()
+  }
+ }
+
+ private func pinPanelBelowMenuBar() {
+  guard popover.isShown, let button = item.button, let anchorWindow = button.window,
+        let window = popover.contentViewController?.view.window else { return }
+  let anchor = anchorWindow.convertToScreen(button.convert(button.bounds, to: nil))
+  // Use the icon's screen, never NSScreen.main (which follows the active app).
+  guard let screen = NSScreen.screens.first(where: { $0.frame.contains(NSPoint(x: anchor.midX, y: anchor.midY)) }) ?? anchorWindow.screen else { return }
+  let origin = PopupPlacement.origin(anchor: anchor, size: window.frame.size, currentX: window.frame.minX, visibleFrame: screen.visibleFrame)
+  guard abs(window.frame.minX - origin.x) > 0.5 || abs(window.frame.minY - origin.y) > 0.5 else { return }
+  placementCorrections += 1
+  window.setFrameOrigin(origin)
  }
 
  private func refresh() {
@@ -115,11 +164,66 @@ import QuartzCore
  }
 
  func close() {
+  placementObservers.removeAll()
   changes?.cancel()
   if let accessibilityObserver { NSWorkspace.shared.notificationCenter.removeObserver(accessibilityObserver) }
   item.button?.layer?.removeAnimation(forKey: "batteryBreathing")
   popover.close()
   NSStatusBar.system.removeStatusItem(item)
+ }
+
+ /// Exercise the real popover geometry without accessing headphones.
+ func runPositioningSmokeTest() {
+  Task { @MainActor in
+   var report: [String] = []
+   var referenceTop: CGFloat?
+   var passed = true
+   @MainActor func record(_ stage: String) {
+    guard let button = item.button, let anchorWindow = button.window,
+          let panelWindow = popover.contentViewController?.view.window else {
+     passed = false; report.append("FAIL: missing window at \(stage), shown=\(popover.isShown), anchor=\(item.button?.window != nil)"); return
+    }
+    let anchor = anchorWindow.convertToScreen(button.convert(button.bounds, to: nil))
+    let panel = panelWindow.frame
+    if let referenceTop { passed = passed && abs(panel.maxY - referenceTop) < 2 }
+    else { referenceTop = panel.maxY }
+    let screen = anchorWindow.screen?.visibleFrame ?? .zero
+    passed = passed && panel.minY >= screen.minY && panel.maxY <= min(screen.maxY, anchor.minY)
+    report.append("\(stage): anchor=\(anchor), panel=\(panel), top gap=\(anchor.minY - panel.maxY), screen=\(screen), visible=\(anchorWindow.screen?.visibleFrame ?? .zero), screens=\(NSScreen.screens.map(\.frame))")
+   }
+   popover.behavior = .applicationDefined
+   try? await Task.sleep(nanoseconds: 500_000_000)
+   showPanel()
+   try? await Task.sleep(nanoseconds: 700_000_000)
+   record("disconnected")
+   headphones.modes = (0..<4).compactMap { index in
+    var raw = [UInt8](repeating: 0, count: 47)
+    raw[0] = UInt8(index); raw[2] = [UInt8(1), 2, 34, 13][index]
+    return ListeningMode(raw)
+   }
+   headphones.audio = AudioSettings([10, 0, 0, 0, 1])
+   headphones.connected = true; headphones.status = "Connected"
+   try? await Task.sleep(nanoseconds: 700_000_000)
+   record("connected")
+   // Reproduce the reported failure: AppKit's host window moves upward so its
+   // header is above the menu bar. A move notification must repair placement.
+   if let window = popover.contentViewController?.view.window {
+    window.setFrameOrigin(NSPoint(x: window.frame.minX, y: window.frame.minY + 240))
+   }
+   try? await Task.sleep(nanoseconds: 700_000_000)
+   record("recovered from upward displacement")
+   headphones.error = "A connection error that wraps onto another line and changes the panel’s height."
+   try? await Task.sleep(nanoseconds: 700_000_000)
+   record("error")
+   headphones.connected = false; headphones.error = nil
+   try? await Task.sleep(nanoseconds: 700_000_000)
+   record("disconnected again")
+   passed = passed && placementCorrections < 20
+   report.append("Placement corrections: \(placementCorrections) (must settle without a repositioning loop)")
+   report.insert(passed ? "PASS" : "FAIL", at: 0)
+   try? report.joined(separator: "\n").write(toFile: "/tmp/qc-control-positioning-test.txt", atomically: true, encoding: .utf8)
+   NSApp.terminate(nil)
+  }
  }
 
  /// Opt-in live regression check: keep the real panel open through polling and

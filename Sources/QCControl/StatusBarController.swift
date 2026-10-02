@@ -31,6 +31,7 @@ enum PopupPlacement {
  private var placementObservers = Set<AnyCancellable>()
  private var placementScheduled = false
  private var placementCorrections = 0
+ private var outsideClickMonitor: Any?
 
  init(headphones: Headphones, onShowSetup: @escaping () -> Void = {}, onActivate: @escaping () -> Bool = { false }) {
   self.headphones = headphones
@@ -60,6 +61,12 @@ enum PopupPlacement {
   ) { [weak self] _ in Task { @MainActor in self?.refresh() } }
   let center = NotificationCenter.default
   center.publisher(for: NSPopover.didShowNotification, object: popover)
+   .sink { [weak self] _ in self?.startClickAwayMonitoring() }.store(in: &placementObservers)
+  center.publisher(for: NSPopover.didCloseNotification, object: popover)
+   .sink { [weak self] _ in self?.stopClickAwayMonitoring() }.store(in: &placementObservers)
+  center.publisher(for: NSApplication.didResignActiveNotification)
+   .sink { [weak self] _ in self?.popover.performClose(nil) }.store(in: &placementObservers)
+  center.publisher(for: NSPopover.didShowNotification, object: popover)
    .merge(with: center.publisher(for: NSApplication.didChangeScreenParametersNotification))
    .sink { [weak self] _ in self?.schedulePlacement() }.store(in: &placementObservers)
   center.publisher(for: NSWindow.didResizeNotification)
@@ -71,6 +78,20 @@ enum PopupPlacement {
     self.schedulePlacement()
    }.store(in: &placementObservers)
   refresh()
+ }
+
+ private func startClickAwayMonitoring() {
+  stopClickAwayMonitoring()
+  // Moving the native popover can leave its transient dismissal region stale.
+  // Observe outside-app mouse clicks explicitly; never consume the user's click.
+  outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]) { [weak self] _ in
+   Task { @MainActor in self?.popover.performClose(nil) }
+  }
+ }
+
+ private func stopClickAwayMonitoring() {
+  if let outsideClickMonitor { NSEvent.removeMonitor(outsideClickMonitor) }
+  outsideClickMonitor = nil
  }
 
  @objc private func togglePanel() {
@@ -164,12 +185,38 @@ enum PopupPlacement {
  }
 
  func close() {
+  stopClickAwayMonitoring()
   placementObservers.removeAll()
   changes?.cancel()
   if let accessibilityObserver { NSWorkspace.shared.notificationCenter.removeObserver(accessibilityObserver) }
   item.button?.layer?.removeAnimation(forKey: "batteryBreathing")
   popover.close()
   NSStatusBar.system.removeStatusItem(item)
+ }
+
+ /// Exercise dismissal and observer cleanup without accessing headphones.
+ func runDismissalSmokeTest() {
+  NotificationCenter.default.publisher(for: NSPopover.didCloseNotification, object: popover)
+   .sink { [weak self] _ in
+    DispatchQueue.main.async {
+     guard let self else { return }
+     let passed = !self.popover.isShown && self.outsideClickMonitor == nil
+     try? "\(passed ? "PASS" : "FAIL"): popup dismissed; outside-click observer removed=\(self.outsideClickMonitor == nil).\n"
+      .write(toFile: "/tmp/qc-control-dismissal-test.txt", atomically: true, encoding: .utf8)
+    }
+   }.store(in: &placementObservers)
+  Task { @MainActor in
+   try? await Task.sleep(nanoseconds: 500_000_000)
+   showPanel()
+   try? "READY: click the desktop or another app.\n".write(toFile: "/tmp/qc-control-dismissal-test.txt", atomically: true, encoding: .utf8)
+   try? await Task.sleep(nanoseconds: 1_000_000_000)
+   NSApp.deactivate()
+   try? await Task.sleep(nanoseconds: 500_000_000)
+   if popover.isShown {
+    try? "FAIL: popup remained visible after app deactivation.\n".write(toFile: "/tmp/qc-control-dismissal-test.txt", atomically: true, encoding: .utf8)
+   }
+   NSApp.terminate(nil)
+  }
  }
 
  /// Exercise the real popover geometry without accessing headphones.

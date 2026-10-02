@@ -8,12 +8,14 @@ import BoseProtocol
  var onPacket: ((Packet) -> Void)?
  var onLog: ((String) -> Void)?
  var count = 0
+ var discoveryCount = 0
  var mode: UInt8 = 0
  var generation = 0
  var onModeRead: (() -> Void)?
  var writes: [UInt8] = []
  func devices() async -> [DeviceChoice] {
-  [DeviceChoice(id: UserDefaults.standard.string(forKey: "headphone") ?? "test", name: "Test headphones", connected: true)]
+  discoveryCount += 1
+  return [DeviceChoice(id: UserDefaults.standard.string(forKey: "headphone") ?? "test", name: "Test headphones", connected: true)]
  }
  func connect(_ address: String) async throws { try await Task.sleep(nanoseconds: 300_000_000) }
  func close() { generation += 1 }

@@ -11,6 +11,7 @@
 <key>CFBundleVersion</key><string>1</string>
 <key>LSMinimumSystemVersion</key><string>13.0</string>
 <key>LSUIElement</key><true/>
+<key>LSApplicationCategoryType</key><string>public.app-category.utilities</string>
 <key>NSBluetoothAlwaysUsageDescription</key><string>QC Control connects to your Bose headphones to read battery status and adjust noise cancellation.</string>
 <key>NSBluetoothPeripheralUsageDescription</key><string>QC Control controls your headphone listening modes over Bluetooth.</string>
 <key>NSHumanReadableCopyright</key><string>Copyright © 2026 Neevash Ramdial</string>

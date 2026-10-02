@@ -13,12 +13,16 @@ import AppKit
 @MainActor final class AppDelegate: NSObject, NSApplicationDelegate {
  private var headphones: Headphones?
  private var statusController: StatusBarController?
+ private var onboarding: OnboardingController?
  func applicationDidFinishLaunching(_ notification: Notification) {
   let smokeTest = CommandLine.arguments.contains("--appearance-smoke-test")
-  let headphones = Headphones(connectAutomatically: !smokeTest)
+  let diagnostic = CommandLine.arguments.contains { $0.hasSuffix("-smoke-test") }
+  let firstLaunch = OnboardingFlow()
+  let headphones = Headphones(connectAutomatically: !smokeTest && (diagnostic || firstLaunch.shouldAutoConnect))
   self.headphones = headphones
-  let controller = StatusBarController(headphones: headphones)
+  let controller = StatusBarController(headphones: headphones, onShowSetup: { [weak self] in self?.showOnboarding() })
   statusController = controller
+  if !diagnostic && (firstLaunch.needsWelcome || CommandLine.arguments.contains("--onboarding")) { showOnboarding() }
   if smokeTest { controller.runAppearanceSmokeTest() }
   if CommandLine.arguments.contains("--connection-smoke-test") { controller.runConnectionSmokeTest() }
   if CommandLine.arguments.contains("--window-smoke-test") {
@@ -30,6 +34,12 @@ import AppKit
    }
   }
  }
+ private func showOnboarding() {
+  if let onboarding, onboarding.isVisible { onboarding.show(); return }
+  guard let headphones else { return }
+  onboarding = OnboardingController(headphones: headphones) { [weak self] in self?.statusController?.showPanel() }
+  onboarding?.show()
+ }
  func applicationWillTerminate(_ notification: Notification) {
   statusController?.close()
   headphones?.shutdown()
@@ -37,6 +47,7 @@ import AppKit
 }
 struct ControlPanel: View {
  @ObservedObject var headphones: Headphones
+ var onShowSetup: () -> Void = {}
  @State private var level: Double = 0
  @State private var editing = false
  var body: some View {
@@ -119,6 +130,7 @@ struct ControlPanel: View {
      }
      Toggle("Launch at login", isOn: Binding(get: { headphones.loginEnabled }, set: headphones.setLogin))
      Button("Bluetooth Settings…", action: headphones.settings)
+     Button("Headphone setup…", action: onShowSetup)
      Button("Copy diagnostics", action: headphones.copyDiagnostics)
      Divider()
      Button("Quit QC Control") { headphones.shutdown(); NSApp.terminate(nil) }.keyboardShortcut("q")

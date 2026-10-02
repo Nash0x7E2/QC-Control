@@ -15,11 +15,14 @@ import QuartzCore
  private var animated = false
  private var animationStyle: BatteryStyle?
 
- init(headphones: Headphones) {
+ init(headphones: Headphones, onShowSetup: @escaping () -> Void = {}) {
   self.headphones = headphones
   super.init()
   popover.behavior = .transient
-  popover.contentViewController = NSHostingController(rootView: ControlPanel(headphones: headphones))
+  popover.contentViewController = NSHostingController(rootView: ControlPanel(headphones: headphones, onShowSetup: { [weak self] in
+   self?.popover.performClose(nil)
+   onShowSetup()
+  }))
   if let button = item.button {
    button.target = self
    button.action = #selector(togglePanel)
@@ -46,6 +49,11 @@ import QuartzCore
    NSApp.activate(ignoringOtherApps: true)
    popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
   }
+ }
+ func showPanel() {
+  guard !popover.isShown, let button = item.button else { return }
+  NSApp.activate(ignoringOtherApps: true)
+  popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
  }
 
  private func refresh() {

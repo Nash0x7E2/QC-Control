@@ -8,10 +8,11 @@ import BoseProtocol
  @Published var devices: [DeviceChoice] = []
  @Published var selected = UserDefaults.standard.string(forKey: "headphone") ?? ""
  @Published var name = "Bose QC Ultra Headphones"
- @Published var status = "Looking for headphones…"
+ @Published var status = "Ready to connect"
  @Published var connected = false
  @Published var busy = false
  @Published var connecting = false
+ @Published var bluetoothAvailability: BluetoothAvailability = .idle
  var isEditingLevel = false
  @Published var battery: Int?
  @Published var modes: [ListeningMode] = []
@@ -40,7 +41,7 @@ import BoseProtocol
  private var paused = false
  private var lastBattery = Date.distantPast
  private var diagnostics: [String] = []
- private var permissionManager: CBCentralManager?
+ private var permissionManager: BluetoothAccess?
  private var session = 0
  private var allModes: [ListeningMode] = []
  private var liveSettings = false
@@ -51,7 +52,6 @@ import BoseProtocol
  init(connectAutomatically: Bool = true, transport injectedTransport: HeadphoneTransport? = nil) {
   transport = injectedTransport ?? BluetoothTransport()
   requiresBluetoothAuthorization = injectedTransport == nil
-  if connectAutomatically && requiresBluetoothAuthorization { permissionManager = CBCentralManager(delegate: nil, queue: .main) }
   transport.onLog = { [weak self] line in
    guard let self else { return }; self.diagnostics.append(line)
    if self.diagnostics.count > 250 { self.diagnostics.removeFirst(50) }
@@ -72,7 +72,10 @@ import BoseProtocol
    Task { @MainActor in self?.paused = true; self?.disconnect() }
   })
   observers.append(nc.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
-   Task { @MainActor in self?.paused = false; self?.startConnection() }
+   Task { @MainActor in
+    guard let self, self.poll != nil else { return }
+    self.paused = false; self.startConnection()
+   }
   })
   if CommandLine.arguments.contains("--diagnose") {
    Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
@@ -81,7 +84,21 @@ import BoseProtocol
     }
    }
   }
-  guard connectAutomatically else { return }
+  if connectAutomatically { startMonitoring() }
+ }
+ func startMonitoring() {
+  guard poll == nil else { return }
+  paused = false
+  status = "Looking for headphones…"
+  if requiresBluetoothAuthorization {
+   UserDefaults.standard.set(true, forKey: OnboardingFlow.startedKey)
+   bluetoothAvailability = .waitingForPermission
+   permissionManager = BluetoothAccess { [weak self] availability in
+    guard let self else { return }
+    if self.bluetoothAvailability != availability { self.bluetoothAvailability = availability }
+    if availability == .ready { self.nextRetry = .distantPast }
+   }
+  } else { bluetoothAvailability = .ready }
   poll = Task { [weak self] in
    while !Task.isCancelled {
     guard let self else { return }
@@ -99,6 +116,7 @@ import BoseProtocol
  func disconnect() { session += 1; transport.close(); resetState() }
  func shutdown() { paused = true; poll?.cancel(); disconnect() }
  func startConnection() {
+  if poll == nil { startMonitoring(); return }
   guard !connecting else { return }
   nextRetry = .distantPast; retryDelay = 5
   disconnect()
@@ -145,11 +163,16 @@ import BoseProtocol
   defer {
    connecting = false
    if !connected {
+    if status == "Connecting…" || status == "Reading headphone controls…" { status = "Not connected · retrying automatically" }
     nextRetry = Date().addingTimeInterval(retryDelay)
     retryDelay = min(retryDelay * 2, 60)
    }
   }
   await perform(background: true) {
+   if requiresBluetoothAuthorization && bluetoothAvailability == .poweredOff {
+    status = "Turn on Bluetooth to find your headphones"
+    return
+   }
    if requiresBluetoothAuthorization && (CBCentralManager.authorization == .denied || CBCentralManager.authorization == .restricted) {
     throw BluetoothFailure.message("Allow QC Control in System Settings → Privacy & Security → Bluetooth, then reopen the app.")
    }
@@ -274,6 +297,9 @@ import BoseProtocol
    loginEnabled = SMAppService.mainApp.status == .enabled
    if enabled && !loginEnabled { error = "Approve QC Control in System Settings → General → Login Items." }
   } catch { self.error = error.localizedDescription }
+ }
+ func privacySettings() {
+  NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Bluetooth")!)
  }
  func settings() { NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.BluetoothSettings")!) }
  func copyDiagnostics() {

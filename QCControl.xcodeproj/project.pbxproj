@@ -3,12 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		159862B419EB62EE4AE98B8A /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14A621FF5CFC7B2D5BA42941 /* CoreBluetooth.framework */; };
+		23314F270FEA8ECF84940614 /* BluetoothAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB557C05D7B35AF488964083 /* BluetoothAccess.swift */; };
 		46B15D5FEB2C7F357BE008C2 /* Headphones.swift in Sources */ = {isa = PBXBuildFile; fileRef = 164F283A90A6FBBFF0693108 /* Headphones.swift */; };
+		53864EACBA103541BDECFCC4 /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321A20FD3230869423F6BBC8 /* Onboarding.swift */; };
 		620F59024FA1791ADEE51FB3 /* Bluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB2E758BBEACD9EA0558B4E /* Bluetooth.swift */; };
 		6691C14073B52705AAFE2AF4 /* QCControlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE942CAA89960176E95E6045 /* QCControlApp.swift */; };
 		794C8DA70462D8D9439B6A0D /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECF9F8EEFA4A4C9BB95CDBBB /* StatusBarController.swift */; };
@@ -21,16 +23,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		14A621FF5CFC7B2D5BA42941 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/CoreBluetooth.framework; sourceTree = DEVELOPER_DIR; };
+		14A621FF5CFC7B2D5BA42941 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		164F283A90A6FBBFF0693108 /* Headphones.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Headphones.swift; sourceTree = "<group>"; };
 		2441FDF054714420101A27DA /* Package.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		321A20FD3230869423F6BBC8 /* Onboarding.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
 		5DB2E758BBEACD9EA0558B4E /* Bluetooth.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Bluetooth.swift; sourceTree = "<group>"; };
-		63CF45F352D53D9E176DED8F /* AppIcon.icns */ = {isa = PBXFileReference; includeInIndex = 1; path = AppIcon.icns; sourceTree = "<group>"; };
-		743B29E22B420BA67218E87C /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/IOBluetooth.framework; sourceTree = DEVELOPER_DIR; };
+		63CF45F352D53D9E176DED8F /* AppIcon.icns */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		743B29E22B420BA67218E87C /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = System/Library/Frameworks/IOBluetooth.framework; sourceTree = SDKROOT; };
 		887697F0E2935A292CC06BF1 /* BatteryIndicator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BatteryIndicator.swift; sourceTree = "<group>"; };
-		A2A8BA118DDE924559190F87 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
-		AC1A1336197D444556F5C57D /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/ServiceManagement.framework; sourceTree = DEVELOPER_DIR; };
-		B57B6F9485ABF0A146D11328 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		A2A8BA118DDE924559190F87 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		AC1A1336197D444556F5C57D /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		B57B6F9485ABF0A146D11328 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		BB557C05D7B35AF488964083 /* BluetoothAccess.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BluetoothAccess.swift; sourceTree = "<group>"; };
 		C508B3C1F02C47C2680FEFF4 /* AppIcon.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = AppIcon.png; sourceTree = "<group>"; };
 		DE942CAA89960176E95E6045 /* QCControlApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QCControlApp.swift; sourceTree = "<group>"; };
 		EB835FF278172310B28DD7BC /* QC Control.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "QC Control.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,6 +66,8 @@
 				164F283A90A6FBBFF0693108 /* Headphones.swift */,
 				DE942CAA89960176E95E6045 /* QCControlApp.swift */,
 				ECF9F8EEFA4A4C9BB95CDBBB /* StatusBarController.swift */,
+				321A20FD3230869423F6BBC8 /* Onboarding.swift */,
+				BB557C05D7B35AF488964083 /* BluetoothAccess.swift */,
 			);
 			name = Application;
 			path = Sources/QCControl;
@@ -84,7 +90,6 @@
 				63CF45F352D53D9E176DED8F /* AppIcon.icns */,
 				C508B3C1F02C47C2680FEFF4 /* AppIcon.png */,
 			);
-			name = Assets;
 			path = Assets;
 			sourceTree = "<group>";
 		};
@@ -158,11 +163,9 @@
 				Base,
 			);
 			mainGroup = 51C8FBD29693C8655114EFC0;
-			minimizedProjectReferenceProxies = 0;
 			packageReferences = (
 				0DB018F594ABDEDE23ACC0CD /* XCLocalSwiftPackageReference "." */,
 			);
-			preferredProjectObjectVersion = 77;
 			productRefGroup = C754F0A70050FEBF10A0CFBE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -193,6 +196,8 @@
 				46B15D5FEB2C7F357BE008C2 /* Headphones.swift in Sources */,
 				6691C14073B52705AAFE2AF4 /* QCControlApp.swift in Sources */,
 				794C8DA70462D8D9439B6A0D /* StatusBarController.swift in Sources */,
+				53864EACBA103541BDECFCC4 /* Onboarding.swift in Sources */,
+				23314F270FEA8ECF84940614 /* BluetoothAccess.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,16 +209,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				EXECUTABLE_NAME = QCControl;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.neevash.qccontrol;
@@ -346,16 +355,20 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YOUR_TEAM_ID;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				EXECUTABLE_NAME = QCControl;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0.0;
 				ONLY_ACTIVE_ARCH = NO;

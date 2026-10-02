@@ -72,19 +72,11 @@ struct ControlPanel: View {
    if headphones.connected {
     VStack(alignment: .leading, spacing: 10) {
      Text("LISTENING MODE").font(.system(size: 10, weight: .semibold)).tracking(1.1).foregroundStyle(.secondary)
-     ScrollView { VStack(spacing: 6) {
-     ForEach(headphones.modes) { mode in
-      Button { headphones.switchMode(mode.id) } label: {
-       HStack {
-        Image(systemName: mode.name == "Aware" ? "ear" : "waveform").frame(width: 20)
-        Text(mode.name)
-        Spacer()
-        if headphones.currentMode == mode.id { Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.accentColor) }
-       }.padding(10).frame(maxWidth: .infinity)
-        .background(headphones.currentMode == mode.id ? Color.accentColor.opacity(0.12) : Color.primary.opacity(0.04), in: RoundedRectangle(cornerRadius: 9))
-      }.buttonStyle(.plain).disabled(headphones.busy)
+     if headphones.modes.count <= 5 {
+      modeButtons
+     } else {
+      ScrollView { modeButtons }.frame(height: 5 * 36 + 4 * 6)
      }
-     } }.frame(height: CGFloat(min(headphones.modes.count, 5)) * 40 + CGFloat(max(0, min(headphones.modes.count, 5) - 1)) * 6)
     }
     if let audio = headphones.audio {
      Divider()
@@ -148,5 +140,20 @@ struct ControlPanel: View {
    .onAppear { level = Double(headphones.audio?.cancellation ?? 0) }
    .onChange(of: headphones.busy) { busy in if !busy && !editing { level = Double(headphones.audio?.cancellation ?? 0) } }
    .onChange(of: headphones.audio) { audio in if !editing { level = Double(audio?.cancellation ?? 0) } }
+ }
+ private var modeButtons: some View {
+  VStack(spacing: 6) {
+   ForEach(headphones.modes) { mode in
+    Button { headphones.switchMode(mode.id) } label: {
+     HStack {
+      Image(systemName: mode.name == "Aware" ? "ear" : "waveform").frame(width: 20)
+      Text(mode.editable && mode.name == "BoseBar" ? "QC Control" : mode.name)
+      Spacer()
+      if headphones.currentMode == mode.id { Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.accentColor) }
+     }.padding(.horizontal, 10).frame(maxWidth: .infinity).frame(height: 36)
+      .background(headphones.currentMode == mode.id ? Color.accentColor.opacity(0.12) : Color.primary.opacity(0.04), in: RoundedRectangle(cornerRadius: 9))
+    }.buttonStyle(.plain).disabled(headphones.busy)
+   }
+  }
  }
 }
